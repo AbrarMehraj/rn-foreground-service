@@ -135,7 +135,7 @@ public class ForegroundService extends Service {
                 case "shortService":
                     return 2048; // ServiceInfo.FOREGROUND_SERVICE_TYPE_SHORT_SERVICE
                 case "specialUse":
-                    return 4096; // ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE
+                    return 0x40000000; // ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE
                 case "systemExempted":
                     return 8192; // ServiceInfo.FOREGROUND_SERVICE_TYPE_SYSTEM_EXEMPTED
                 default:
