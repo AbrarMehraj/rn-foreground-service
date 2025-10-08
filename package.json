@@ -27,7 +27,7 @@
     "fork"
   ],
   "author": {
-    "name": "Abrar Mehraj",
+    "name": "Abrar Mehraj"
   },
   "peerDependencies": {
     "react-native": ">=0.59.0"
