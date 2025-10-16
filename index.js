@@ -3,7 +3,8 @@ import {
   AppRegistry,
   DeviceEventEmitter,
   NativeEventEmitter,
-  Alert
+  Alert,
+  Platform
 } from 'react-native';
 
 // ANDROID ONLY
@@ -133,6 +134,49 @@ class ForegroundService {
   }
 }
 
+// Allowed service type values mapped in Android native module
+const ALLOWED_SERVICE_TYPES = new Set([
+  'camera',
+  'connectedDevice',
+  'dataSync',
+  'health',
+  'location',
+  'mediaPlayback',
+  'mediaProjection',
+  'microphone',
+  'phoneCall',
+  'remoteMessaging',
+  'shortService',
+  'specialUse',
+  'systemExempted',
+]);
+
+// Validate presence of ServiceType on Android 14+ where it's mandatory
+// Returns true when valid; otherwise shows an alert and returns false to avoid throwing
+const assertServiceTypeIfRequired = (serviceTypeValue) => {
+  // Android API 34 (Android 14) and above require a foreground service type
+  if (Platform.OS === 'android' && Number(Platform.Version) >= 34) {
+    const isMissing = !serviceTypeValue || typeof serviceTypeValue !== 'string' || serviceTypeValue.trim().length === 0;
+    if (isMissing) {
+      Alert.alert(
+        'Service Error',
+        'ServiceType is required on Android 14+ (API 34+). Please provide an appropriate foreground service type.'
+      );
+      return false;
+    }
+
+    // If provided, ensure it's one of the allowed values to avoid native errors
+    if (!ALLOWED_SERVICE_TYPES.has(serviceTypeValue)) {
+      Alert.alert(
+        'Service Error',
+        `Invalid ServiceType: "${serviceTypeValue}". Allowed values: ${Array.from(ALLOWED_SERVICE_TYPES).join(', ')}`
+      );
+      return false;
+    }
+  }
+  return true;
+};
+
 const randHashString = len => {
   return 'x'.repeat(len).replace(/[xy]/g, c => {
     let r = (Math.random() * 16) | 0,
@@ -212,6 +256,11 @@ const start = async ({
   setOnlyAlertOnce,
 }) => {
   try {
+    // Ensure ServiceType is provided on Android 14+
+    if (!assertServiceTypeIfRequired(ServiceType)) {
+      // Abort start to prevent invalid native call on Android 14+
+      return;
+    }
     if (!serviceRunning) {
       await ForegroundService.startService({
         id,
@@ -273,6 +322,11 @@ const update = async ({
   setOnlyAlertOnce,
 }) => {
   try {
+    // Ensure ServiceType is provided on Android 14+
+    if (!assertServiceTypeIfRequired(ServiceType)) {
+      // Abort update to prevent invalid native call on Android 14+
+      return;
+    }
     await ForegroundService.updateNotification({
       id,
       title,

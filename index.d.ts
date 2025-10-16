@@ -1,3 +1,18 @@
+export type ForegroundServiceType =
+  | 'camera'
+  | 'connectedDevice'
+  | 'dataSync'
+  | 'health'
+  | 'location'
+  | 'mediaPlayback'
+  | 'mediaProjection'
+  | 'microphone'
+  | 'phoneCall'
+  | 'remoteMessaging'
+  | 'shortService'
+  | 'specialUse'
+  | 'systemExempted';
+
 declare const ReactNativeForegroundService: {
   register: ({
     config,
@@ -31,6 +46,7 @@ declare const ReactNativeForegroundService: {
     id: any;
     title?: any;
     message?: string | undefined;
+    ServiceType: ForegroundServiceType;
     vibration?: boolean | undefined;
     visibility?: string | undefined;
     icon?: string | undefined;
@@ -75,6 +91,7 @@ declare const ReactNativeForegroundService: {
     id: any;
     title?: any;
     message?: string | undefined;
+    ServiceType: ForegroundServiceType;
     vibration?: boolean | undefined;
     visibility?: string | undefined;
     largeIcon?: string | undefined;
